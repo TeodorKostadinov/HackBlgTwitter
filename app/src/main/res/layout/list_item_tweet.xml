@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/txt_tweet_sender"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="John Smith"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+
+    <TextView
+        android:id="@+id/txt_tweet_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:text="This is a sample tweet.as"
+        android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/img_tweet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

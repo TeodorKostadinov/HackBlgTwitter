@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "511615565374",
+    "firebase_url": "https://hackblagoevgrad-twitter.firebaseio.com",
+    "project_id": "hackblagoevgrad-twitter",
+    "storage_bucket": "hackblagoevgrad-twitter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:511615565374:android:1a9f1ec5071d7925",
+        "android_client_info": {
+          "package_name": "com.mentormate.hackblagoevgradtwitter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "511615565374-3a7rccbve6443t7fdn9hafiq9taeseeo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mentormate.hackblagoevgradtwitter",
+            "certificate_hash": "71B913EFF50468E606D7C5D9EA042369C1476EBB"
+          }
+        },
+        {
+          "client_id": "511615565374-m85kekmg70igvrosr73rcr716qoa0ujs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8XJYBUaSzLJB0kpTFZbAbtdwtjZj8lkQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "511615565374-m85kekmg70igvrosr73rcr716qoa0ujs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
