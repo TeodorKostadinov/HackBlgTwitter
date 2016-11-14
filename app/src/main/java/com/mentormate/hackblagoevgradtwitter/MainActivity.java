@@ -1,12 +1,17 @@
 package com.mentormate.hackblagoevgradtwitter;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -39,16 +44,62 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
+    private void getTweets() {
+        db.getLastTweets(
+                new TwitterUser(
+                        FirebaseAuth.getInstance().getCurrentUser().getEmail(),
+                        FirebaseAuth.getInstance().getCurrentUser().getDisplayName()),
+                100,
+                twitterPostListener
+                );
+    }
+
+    TwitterPostListener twitterPostListener = new TwitterPostListener() {
+        @Override
+        public void onPostsReceived(TwitterUser user, List<TwitterPost> tweets) {
+            adapter.setTweets(tweets);
+        }
+
+        @Override
+        public void onError() {
+            Toast.makeText(MainActivity.this, "Failed to get tweets", Toast.LENGTH_SHORT).show();
+        }
+    };
+
     @OnClick(R.id.btn_tweet)
     public void onTweetClicked() {
         if(!edtTweet.getText().toString().equals("")) {
             db.postTweet(new TwitterPost(edtTweet.getText().toString()));
         }
+        edtTweet.setText("");
+        getTweets();
+        logButtonClicked("tweetText");
+    }
+
+    @OnClick(R.id.btn_tweet_photo)
+    public void onTweetPhotoClicked() {
+        startActivity(new Intent(this, TweetPhotoActivity.class));
+        logButtonClicked("tweetPhoto");
     }
 
     @OnClick(R.id.btn_logout)
     public void onLogoutClicked() {
         FirebaseAuth.getInstance().signOut();
+        logButtonClicked("logout");
         finish();
+    }
+
+    @OnClick(R.id.btn_crash)
+    public void onCrashClicked() {
+        throw new RuntimeException("Opa");
+    }
+
+    private void logButtonClicked(String buttonName) {
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, buttonName);
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, buttonName);
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "button");
+        FirebaseAnalytics.getInstance(this)
+                .logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 }

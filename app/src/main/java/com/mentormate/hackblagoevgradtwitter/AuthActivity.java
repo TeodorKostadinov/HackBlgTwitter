@@ -28,31 +28,26 @@ public class AuthActivity extends AppCompatActivity {
     EditText edtPassword;
 
     private FirebaseAuth firebaseAuth;
-    private FirebaseAuth.AuthStateListener authStateListener;
+
+    private FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                Log.e(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                showMainScreen();
+            } else {
+                Log.e(TAG, "onAuthStateChanged:signed_out");
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
         ButterKnife.bind(this);
-
         firebaseAuth = FirebaseAuth.getInstance();
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    com.google.android.gms.tasks.Task<com.google.firebase.auth.GetTokenResult> asd =
-                            user.getToken(false);
-                    String token = asd.getResult().getToken();
-                    UserPrefs.saveUser(user.getEmail(), token);
-                    Log.e(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    showMainScreen();
-                } else {
-                    Log.e(TAG, "onAuthStateChanged:signed_out");
-                }
-            }
-        };
     }
 
     private void showMainScreen() {
@@ -70,22 +65,6 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void authUser(String email, String password) {
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                Log.e(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
-                                Log.e(TAG, "createUserWithEmail:onComplete:" + task.getException());
-                                if (!task.isSuccessful()) {
-                                    Toast.makeText(AuthActivity.this, "Authentication failed. " + task.getException().getMessage(),
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }
-                );
-    }
-
-    private void regUser(String email, String password) {
         firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -98,6 +77,20 @@ public class AuthActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void regUser(String email, String password) {
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (!task.isSuccessful()) {
+                                    Toast.makeText(AuthActivity.this, "Authentication failed. " + task.getException().getMessage(),
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+                );
     }
 
     @Override

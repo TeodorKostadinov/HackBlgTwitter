@@ -1,18 +1,16 @@
 package com.mentormate.hackblagoevgradtwitter;
 
-import android.util.Log;
-
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.R.attr.value;
-import static com.google.android.gms.internal.zzs.TAG;
 
 public class FirebaseDatabaseHelper implements DatabaseHelper {
 
@@ -20,8 +18,6 @@ public class FirebaseDatabaseHelper implements DatabaseHelper {
     private final FirebaseDatabase database;
     private final DatabaseReference dbUsers;
     private DatabaseReference dbThisUser;
-
-    List<TwitterFollowListener> followingListeners = new ArrayList<>();
 
     public static FirebaseDatabaseHelper getInstance() {
         if (instance == null) {
@@ -33,16 +29,10 @@ public class FirebaseDatabaseHelper implements DatabaseHelper {
     private FirebaseDatabaseHelper() {
         database = FirebaseDatabase.getInstance();
         dbUsers = database.getReference("users");
-        dbUsers.addValueEventListener(allFollowingReceiver);
-        if (hasUser(UserPrefs.getUserEmail())) {
-
-        } else {
-            dbThisUser = dbUsers.push();
-            dbThisUser.setValue(new TwitterUser(UserPrefs.getUserEmail(), UserPrefs.getUserTocken()));
-        }
+        loadUser(FirebaseAuth.getInstance().getCurrentUser().getEmail());
     }
 
-    private boolean hasUser(final String email) {
+    private void loadUser(final String email) {
         dbUsers.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -59,7 +49,9 @@ public class FirebaseDatabaseHelper implements DatabaseHelper {
                     dbThisUser = dbUsers.child(userId);
                 } else {
                     dbThisUser = dbUsers.push();
-                    dbThisUser.setValue(new TwitterUser(UserPrefs.getUserEmail(), UserPrefs.getUserTocken()));
+                    dbThisUser.setValue(new TwitterUser(
+                            FirebaseAuth.getInstance().getCurrentUser().getEmail(),
+                            FirebaseAuth.getInstance().getCurrentUser().getDisplayName()));
                 }
             }
 
@@ -68,25 +60,27 @@ public class FirebaseDatabaseHelper implements DatabaseHelper {
 
             }
         });
-        return false;
-    }
-
-
-    @Override
-    public void getAllFollowing(TwitterUser user, final TwitterFollowListener listener) {
-        followingListeners.add(listener);
-        dbUsers.removeEventListener(allFollowingReceiver);
-        dbUsers.addValueEventListener(allFollowingReceiver);
     }
 
     @Override
-    public void getAllFollowers(TwitterUser user, TwitterFollowListener listener) {
+    public void getLastTweets(final TwitterUser user, int count, final TwitterPostListener listener) {
+        if (dbThisUser != null) {
+            dbThisUser.child("tweets").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    List<TwitterPost> tweets = new ArrayList<TwitterPost>();
+                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+                        tweets.add(data.getValue(TwitterPost.class));
+                    }
+                    listener.onPostsReceived(user, tweets);
+                }
 
-    }
-
-    @Override
-    public void getLastTweets(TwitterUser user, int count, TwitterPostListener listener) {
-
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    listener.onError();
+                }
+            });
+        }
     }
 
     @Override
@@ -94,23 +88,7 @@ public class FirebaseDatabaseHelper implements DatabaseHelper {
         dbThisUser.child("tweets").push().setValue(post);
     }
 
-    ValueEventListener allFollowingReceiver = new ValueEventListener() {
-
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            Log.d(TAG, "Value is: " + value);
-            updateTwitterFollowingListeners();
-        }
-
-        @Override
-        public void onCancelled(DatabaseError error) {
-            Log.w(TAG, "Failed to read value.", error.toException());
-        }
-    };
-
-    private void updateTwitterFollowingListeners() {
-        for (TwitterFollowListener listener : followingListeners) {
-            listener.onUsersReceived();
-        }
+        public StorageReference getImageStorage(String imageName) {
+        return FirebaseStorage.getInstance().getReference().child("images/" + imageName);
     }
 }

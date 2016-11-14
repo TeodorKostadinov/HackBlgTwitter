@@ -16,19 +16,49 @@
         android:id="@+id/edt_tweet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/btn_tweet" />
+        android:layout_above="@+id/grp_tweet" />
 
-    <Button
-        android:id="@+id/btn_tweet"
+    <LinearLayout
+        android:id="@+id/grp_tweet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/btn_logout"
-        android:text="Tweet" />
+        android:layout_above="@+id/grp_crash"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btn_logout"
+        <Button
+            android:id="@+id/btn_tweet_photo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Tweet Photo" />
+
+        <Button
+            android:id="@+id/btn_tweet"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Tweet" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/grp_crash"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="Logout" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_crash"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Crash" />
+
+        <Button
+            android:id="@+id/btn_logout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Logout" />
+    </LinearLayout>
 </RelativeLayout>
