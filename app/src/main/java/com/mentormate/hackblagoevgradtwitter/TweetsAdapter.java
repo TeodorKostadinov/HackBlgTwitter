@@ -46,8 +46,9 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.TweetHolde
         TwitterPost post = tweets.get(position);
         holder.txtTweetSender.setText(post.sender);
         holder.txtTweetMessage.setText(post.message);
+        holder.imgTweet.setVisibility(View.GONE);
         if (post.picUrl != null) {
-            downloadImage(holder, post.picUrl);
+            downloadImage(holder.imgTweet, post.picUrl);
         }
     }
 
@@ -71,14 +72,15 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.TweetHolde
         }
     }
 
-    private void downloadImage(final TweetHolder holder, String imageUrl) {
+    private void downloadImage(final ImageView imageView, String imageUrl) {
         String imageName = imageUrl.substring(imageUrl.lastIndexOf("/"));
         FirebaseDatabaseHelper.getInstance().getImageStorage(imageName).getBytes(4000000)
                 .addOnCompleteListener(new OnCompleteListener<byte[]>() {
                     @Override
                     public void onComplete(@NonNull Task<byte[]> task) {
                         Bitmap bitmap = convertToBitmap(task.getResult());
-                        holder.imgTweet.setImageBitmap(bitmap);
+                        imageView.setImageBitmap(bitmap);
+                        imageView.setVisibility(View.VISIBLE);
                     }
                 });
     }

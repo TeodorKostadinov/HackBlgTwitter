@@ -15,7 +15,6 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
-
     <TextView
         android:id="@+id/txt_tweet_message"
         android:layout_width="match_parent"
@@ -28,11 +27,12 @@
     <ImageView
         android:id="@+id/img_tweet"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="200dp"
+        android:scaleType="centerCrop" />
 
     <View
         android:layout_width="match_parent"
-        android:layout_marginTop="8dp"
         android:layout_height="1dp"
-        android:background="#888"/>
+        android:layout_marginTop="8dp"
+        android:background="@color/colorPrimary" />
 </LinearLayout>

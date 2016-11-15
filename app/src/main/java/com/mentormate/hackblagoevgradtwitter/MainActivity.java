@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.rec_view)
     RecyclerView recyclerView;
 
-    DatabaseHelper db;
+    FirebaseDatabaseHelper db;
     private TweetsAdapter adapter;
 
     @Override
@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         db = FirebaseDatabaseHelper.getInstance();
         setupRecView();
+        getTweets();
     }
 
     private void setupRecView() {
@@ -45,18 +46,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getTweets() {
-        db.getLastTweets(
-                new TwitterUser(
-                        FirebaseAuth.getInstance().getCurrentUser().getEmail(),
-                        FirebaseAuth.getInstance().getCurrentUser().getDisplayName()),
-                100,
-                twitterPostListener
-                );
+        db.getLastTweets(100, twitterPostListener);
     }
 
     TwitterPostListener twitterPostListener = new TwitterPostListener() {
         @Override
-        public void onPostsReceived(TwitterUser user, List<TwitterPost> tweets) {
+        public void onPostsReceived(List<TwitterPost> tweets) {
             adapter.setTweets(tweets);
         }
 
@@ -68,11 +63,10 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_tweet)
     public void onTweetClicked() {
-        if(!edtTweet.getText().toString().equals("")) {
+        if (!edtTweet.getText().toString().equals("")) {
             db.postTweet(new TwitterPost(edtTweet.getText().toString()));
         }
         edtTweet.setText("");
-        getTweets();
         logButtonClicked("tweetText");
     }
 
